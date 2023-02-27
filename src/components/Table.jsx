@@ -1,22 +1,32 @@
 import { useContext } from 'react';
 import FetchContext from '../context/FetchContext';
+import useFilter from '../hooks/useFilter';
 
 function Table() {
-  const { data, isLoading } = useContext(FetchContext);
+  const { isLoading } = useContext(FetchContext);
+  const { filteredByname } = useFilter();
   return (
     <div>
       <table>
         <thead>
           <tr>
-            {isLoading && Object.keys(data[0]).map((key) => (
-              <th key={ key }>
-                { key }
-              </th>
-            ))}
+            <th>Name</th>
+            <th>Rotation Period</th>
+            <th>Orbital Period</th>
+            <th>Diameter</th>
+            <th>Climate</th>
+            <th>Gravity</th>
+            <th>Terrain</th>
+            <th>Surface Water</th>
+            <th>Population</th>
+            <th>Films</th>
+            <th>Created</th>
+            <th>Edited</th>
+            <th>Url</th>
           </tr>
         </thead>
         <tbody>
-          {isLoading && data.map((planet) => (
+          {isLoading && filteredByname.map((planet) => (
             <tr key={ planet.name }>
               <td>{ planet.name }</td>
               <td>{ planet.rotation_period }</td>
