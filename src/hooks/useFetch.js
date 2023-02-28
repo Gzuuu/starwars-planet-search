@@ -5,7 +5,7 @@ const api = 'https://swapi.dev/api/planets';
 const useFetch = () => {
   const [error, setError] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  async function apiFetch(setContextState) {
+  async function apiFetch() {
     try {
       const response = await fetch(api);
       if (!response.ok) {
@@ -17,7 +17,7 @@ const useFetch = () => {
         return result;
       });
       setLoading(true);
-      setContextState(withoutResidents);
+      return withoutResidents;
     } catch (e) {
       setError(e.message);
     } finally {

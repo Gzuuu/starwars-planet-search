@@ -9,9 +9,7 @@ export default function Filter() {
       type="text"
       data-testid="name-filter"
       placeholder="Pesquisar"
-      onChange={ (e) => {
-        filterName(e.target.value.toLowerCase());
-      } }
+      onChange={ (e) => filterName(e.target.value.toLowerCase()) }
     />
   );
 }
