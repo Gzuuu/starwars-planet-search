@@ -1,34 +1,37 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import useFormInput from '../hooks/userFormInput';
 import FetchContext from '../context/FetchContext';
 import RemoveFilter from './RemoveFilter';
 
 export default function NumFilters() {
   const {
-    numFilter,
+    categoryFilter,
+    removeCategory,
     filterOptions,
     setFilterOptions } = useContext(FetchContext);
-
-  const category = useFormInput('population');
+  const [category, setCategory] = useState('population');
   const parameter = useFormInput('maior que');
   const number = useFormInput(0);
 
   const options = {
-    cat: category.value,
+    cat: category,
     par: parameter.value,
     num: number.value,
   };
 
+  useEffect(() => {
+    removeCategory();
+    setCategory(categoryFilter[0]);
+  }, [filterOptions]);
   return (
     <div>
       <form>
         <label>
           <select
-            defaultValue="population"
             data-testid="column-filter"
-            onChange={ (e) => category.handleChange(e) }
+            onChange={ (e) => setCategory(e.target.value) }
           >
-            {numFilter.map((optionsFilter) => (
+            {categoryFilter.map((optionsFilter) => (
               <option
                 value={ optionsFilter }
                 key={ optionsFilter }
@@ -64,6 +67,7 @@ export default function NumFilters() {
             e.preventDefault();
             setFilterOptions([...filterOptions, options]);
           } }
+          disabled={ !categoryFilter.length }
         >
           Filtrar
         </button>

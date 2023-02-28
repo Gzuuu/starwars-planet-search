@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import useFetch from '../hooks/useFetch';
 import FetchContext from './FetchContext';
 
-const numericFilter = [
+const categoryFilters = [
   'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'];
 
 export default function FetchProvider({ children }) {
@@ -11,7 +11,7 @@ export default function FetchProvider({ children }) {
   const [data, setData] = useState([]);
   const [nameFilter, setFilter] = useState('');
   const [filterOptions, setFilterOptions] = useState([]);
-  const [numFilter, setNumFilter] = useState(numericFilter);
+  const [categoryFilter, setCategoryFilter] = useState(categoryFilters);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -47,11 +47,17 @@ export default function FetchProvider({ children }) {
   }, [filterOptions]);
 
   const filterName = (name) => setFilter(name);
-
-  // const removeOption = (obj) => {
-  //   const filtered = filterOptions.filter((options) => options.cat !== obj.cat);
-  //   setFilterOptions(filtered);
-  // };
+  const removeCategory = () => {
+    const withoutSameCategory = categoryFilters;
+    filterOptions.map((a) => {
+      if (withoutSameCategory.some((s) => s === a.cat)) {
+        const index = withoutSameCategory.indexOf(a.cat);
+        withoutSameCategory.splice(index, 1);
+      }
+      return a;
+    });
+    setCategoryFilter(withoutSameCategory);
+  };
 
   const values = useMemo(() => ({
     data,
@@ -59,15 +65,15 @@ export default function FetchProvider({ children }) {
     isLoading,
     filterName,
     nameFilter,
-    numFilter,
-    setNumFilter,
+    categoryFilter,
+    setCategoryFilter,
     filteredByname,
     filterByPreferences,
     filterOptions,
+    removeCategory,
     setFilterOptions,
-    // removeOption,
   }), [data, isLoading, error,
-    nameFilter, numFilter, filterOptions, filteredByname]);
+    nameFilter, categoryFilter, filterOptions, filteredByname]);
   return (
     <FetchContext.Provider value={ values }>
       { children }
