@@ -12,9 +12,12 @@ const useFetch = () => {
         throw new Error(await response.json());
       }
       const data = await response.json();
-      data.results.forEach((result) => delete result.residents);
+      const withoutResidents = data.results.map((result) => {
+        delete result.residents;
+        return result;
+      });
       setLoading(true);
-      setContextState(data.results);
+      setContextState(withoutResidents);
     } catch (e) {
       setError(e.message);
     } finally {
