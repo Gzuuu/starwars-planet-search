@@ -54,8 +54,8 @@ export default function FetchProvider({ children }) {
   };
 
   useEffect(() => {
-    const filteredByname = data
-      .filter((planet) => planet.name.toLowerCase().includes(nameFilter));
+    const filteredByname = data ? data
+      .filter((planet) => planet.name.toLowerCase().includes(nameFilter)) : [];
     if (nameFilter.length > 0) return setSelectedFilter(filteredByname);
     if (filterOptions.length > 0) return setSelectedFilter(selectedFilter);
     return setSelectedFilter(data);
