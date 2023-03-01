@@ -2,8 +2,7 @@ import { useContext } from 'react';
 import FetchContext from '../context/FetchContext';
 
 function Table() {
-  const { filteredByname } = useContext(FetchContext);
-
+  const { selectedFilter } = useContext(FetchContext);
   return (
     <div>
       <table>
@@ -25,7 +24,7 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {filteredByname.map((planet) => (
+          {selectedFilter.map((planet) => (
             <tr key={ planet.name }>
               <td>{ planet.name }</td>
               <td>{ planet.rotation_period }</td>
@@ -36,7 +35,12 @@ function Table() {
               <td>{ planet.terrain }</td>
               <td>{ planet.surface_water }</td>
               <td>{ planet.population }</td>
-              <td>{ planet.films }</td>
+              <td>
+                { planet.films?.map((film) => (
+                  <p key={ film }>{ film }</p>
+                )) }
+
+              </td>
               <td>{ planet.created }</td>
               <td>{ planet.edited }</td>
               <td>{ planet.url }</td>

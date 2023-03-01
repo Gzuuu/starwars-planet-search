@@ -3,15 +3,16 @@ import PropTypes from 'prop-types';
 import useFetch from '../hooks/useFetch';
 import FetchContext from './FetchContext';
 
-const categoryFilters = [
+const categoryOptions = [
   'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'];
 
 export default function FetchProvider({ children }) {
   const { apiFetch, error, isLoading } = useFetch();
-  const [data, setData] = useState([]);
-  const [nameFilter, setFilter] = useState('');
-  const [filterOptions, setFilterOptions] = useState([]);
-  const [categoryFilter, setCategoryFilter] = useState(categoryFilters);
+  const [data, setData] = useState([]); // resposta da api
+  const [nameFilter, setFilter] = useState(''); // input filter
+  const [filterOptions, setFilterOptions] = useState([]); // opçoes de filtro
+  const [categoryFilter, setCategoryFilter] = useState(categoryOptions); // lista de categorias
+  const [selectedFilter, setSelectedFilter] = useState([]); // estado que sera renderizado
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -21,43 +22,44 @@ export default function FetchProvider({ children }) {
     fetchResults();
   }, []);
 
-  const filteredByname = data
-    .filter((planet) => planet.name.toLowerCase().includes(nameFilter));
+  const filterName = (name) => setFilter(name);
 
-  const filterByPreferences = () => {
-    const filtered = filterOptions.map((filt) => {
-      const { num, par, cat } = filt;
-      return filteredByname.filter((planet) => {
-        if (par === 'maior que') {
-          return planet[cat] > Number(num);
-        } if (par === 'menor que') {
-          return planet[cat] < Number(num);
-        } if (par === 'igual a') {
-          return Number(planet[cat]) === Number(num);
-        }
-        return planet;
-      });
+  const filterByPreferences = (fOpt) => {
+    let newArr = [];
+
+    fOpt?.forEach((opt) => {
+      const { cat, num, par } = opt;
+      if (par === 'maior que') {
+        newArr = data.filter((planet) => planet[cat] > Number(num));
+      } if (par === 'menor que') {
+        newArr = data.filter((planet) => planet[cat] < Number(num));
+      } if (par === 'igual a') {
+        newArr = data.filter((planet) => planet[cat] === Number(num));
+      }
     });
-    const lastIndex = -1;
-    setData(filtered.length > 0 ? filtered.at(lastIndex) : filtered);
+    setSelectedFilter(newArr);
+  };
+
+  const removeOption = (cat) => {
+    const RemoveCatFilter = filterOptions.filter((opt) => opt.cat !== cat);
+    setFilterOptions(RemoveCatFilter);
+    filterByPreferences(RemoveCatFilter);
+  };
+
+  const addCategoryOptions = () => {
+    const filterToCompare = filterOptions.map((options) => options.cat);
+    const difference = categoryOptions
+      .filter((categories) => !filterToCompare.includes(categories));
+    setCategoryFilter(difference);
   };
 
   useEffect(() => {
-    filterByPreferences();
-  }, [filterOptions]);
-
-  const filterName = (name) => setFilter(name);
-  const removeCategory = () => {
-    const withoutSameCategory = categoryFilters;
-    filterOptions.map((a) => {
-      if (withoutSameCategory.some((s) => s === a.cat)) {
-        const index = withoutSameCategory.indexOf(a.cat);
-        withoutSameCategory.splice(index, 1);
-      }
-      return a;
-    });
-    setCategoryFilter(withoutSameCategory);
-  };
+    const filteredByname = data
+      .filter((planet) => planet.name.toLowerCase().includes(nameFilter));
+    if (nameFilter.length > 0) return setSelectedFilter(filteredByname);
+    if (filterOptions.length > 0) return setSelectedFilter(selectedFilter);
+    return setSelectedFilter(data);
+  }, [nameFilter, data, filterOptions]);
 
   const values = useMemo(() => ({
     data,
@@ -65,15 +67,17 @@ export default function FetchProvider({ children }) {
     isLoading,
     filterName,
     nameFilter,
-    categoryFilter,
-    setCategoryFilter,
-    filteredByname,
-    filterByPreferences,
+    removeOption,
     filterOptions,
-    removeCategory,
+    addCategoryOptions,
+    setCategoryFilter,
+    filterByPreferences,
+    selectedFilter,
+    categoryFilter,
+    setSelectedFilter,
     setFilterOptions,
-  }), [data, isLoading, error,
-    nameFilter, categoryFilter, filterOptions, filteredByname]);
+  }), [data, isLoading, error, selectedFilter, categoryFilter,
+    nameFilter, filterOptions]);
   return (
     <FetchContext.Provider value={ values }>
       { children }

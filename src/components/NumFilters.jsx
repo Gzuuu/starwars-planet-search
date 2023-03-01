@@ -6,8 +6,12 @@ import RemoveFilter from './RemoveFilter';
 export default function NumFilters() {
   const {
     categoryFilter,
-    removeCategory,
     filterOptions,
+    filterByPreferences,
+    addCategoryOptions,
+    selectedFilter,
+    setSelectedFilter,
+    setCategoryFilter,
     setFilterOptions } = useContext(FetchContext);
   const [category, setCategory] = useState('population');
   const parameter = useFormInput('maior que');
@@ -19,10 +23,44 @@ export default function NumFilters() {
     num: number.value,
   };
 
+  const removeCategory = () => {
+    const withoutSameCategory = categoryFilter;
+    filterOptions.map((option) => {
+      if (withoutSameCategory.some((cat) => cat === option.cat)) {
+        const index = withoutSameCategory.indexOf(option.cat);
+        withoutSameCategory.splice(index, 1);
+        setCategoryFilter(withoutSameCategory);
+      }
+      return option;
+    });
+  };
+  const applyFilter = (obj) => {
+    const { par, cat, num } = obj;
+    let newArray = [];
+    if (par === 'maior que') {
+      newArray = selectedFilter
+        ?.filter((planet) => Number(planet[cat] > Number(num)));
+    }
+
+    if (par === 'menor que') {
+      newArray = selectedFilter
+        ?.filter((planet) => Number(planet[cat] < Number(num)));
+    }
+
+    if (par === 'igual a') {
+      newArray = selectedFilter
+        ?.filter((planet) => Number(planet[cat]) === Number(num));
+    }
+    setSelectedFilter(newArray);
+  };
+
   useEffect(() => {
     removeCategory();
+    filterByPreferences(filterOptions);
+    addCategoryOptions();
     setCategory(categoryFilter[0]);
   }, [filterOptions]);
+
   return (
     <div>
       <form>
@@ -66,6 +104,7 @@ export default function NumFilters() {
           onClick={ (e) => {
             e.preventDefault();
             setFilterOptions([...filterOptions, options]);
+            applyFilter(options);
           } }
           disabled={ !categoryFilter.length }
         >
