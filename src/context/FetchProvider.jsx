@@ -8,11 +8,11 @@ const categoryOptions = [
 
 export default function FetchProvider({ children }) {
   const { apiFetch, error, isLoading } = useFetch();
-  const [data, setData] = useState([]); // resposta da api
-  const [nameFilter, setFilter] = useState(''); // input filter
-  const [filterOptions, setFilterOptions] = useState([]); // opçoes de filtro
-  const [categoryFilter, setCategoryFilter] = useState(categoryOptions); // lista de categorias
-  const [selectedFilter, setSelectedFilter] = useState([]); // estado que sera renderizado
+  const [data, setData] = useState([]);
+  const [nameFilter, setFilter] = useState('');
+  const [filterOptions, setFilterOptions] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState(categoryOptions);
+  const [selectedFilter, setSelectedFilter] = useState([]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -70,6 +70,7 @@ export default function FetchProvider({ children }) {
     removeOption,
     filterOptions,
     addCategoryOptions,
+    categoryOptions,
     setCategoryFilter,
     filterByPreferences,
     selectedFilter,

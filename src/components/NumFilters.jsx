@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import useFormInput from '../hooks/userFormInput';
 import FetchContext from '../context/FetchContext';
 import RemoveFilter from './RemoveFilter';
+import FilterByOrder from './FilterByOrder';
 
 export default function NumFilters() {
   const {
@@ -112,6 +113,7 @@ export default function NumFilters() {
         </button>
       </form>
       <RemoveFilter />
+      <FilterByOrder />
     </div>
   );
 }
